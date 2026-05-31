@@ -112,6 +112,55 @@ Settings, prompts, WebView profiles, and usage statistics are stored under `%LOC
 - Parsing and utilities: `regex`, `url`, `urlencoding`, `sha2`
 - Errors and synchronization: `anyhow`, `thiserror`, `parking_lot`
 
+### 📂 Project Structure
+
+ruster/
+├── src/
+│   ├── main.rs              # Application entry point and initialization
+│   ├── gui.rs               # GUI dashboard and user interface
+│   ├── http_server.rs       # axum-based local API server and routing
+│   ├── custom_api.rs        # Custom API preset handling
+│   ├── gemini_gate.rs       # Gemini / ChatGPT WebView browser automation
+│   ├── cli.rs               # Gemini CLI mode and process control
+│   ├── ivlyrics.rs          # ivLyrics dedicated prompt adjustment and fast lane
+│   ├── logging.rs           # Log recording and usage statistics management
+│   └── diagnostics.rs       # System status diagnostics and runtime checks
+├── assets/                  # Icons and UI resources
+├── Cargo.toml               # Rust project blueprint and dependency configuration
+├── build.rs                 # Build script (Windows resource compilation)
+└── README.md                # Project documentation
+
+---
+
+### 🔄 System Workflow
+
+1. **Request Reception:** External programs or the GUI send requests to http://localhost:5000
+2. **Routing & Analysis:** ruster's internal HTTP server intercepts the request and parses the API format (OpenAI, Gemini, or Custom API)
+3. **Backend Dispatch:** The prompt is forwarded to the currently active backend engine (Gemini WebView, Gemini CLI, or ChatGPT WebView) for processing
+4. **Format Conversion:** The raw response from the backend is reformatted to match the requested API specification (compatible format)
+5. **Result Return:** The final translation data is returned to the external application or user
+6. **Post-Processing:** Usage statistics are updated and runtime logs are saved based on the request outcome
+
+---
+
+### 🎯 Development Objectives
+
+ruster consolidates scattered AI service backends into a unified, local proxy environment, allowing desktop applications to effortlessly leverage AI features via standard OpenAI or Gemini API formats.
+
+It focuses heavily on enhancing compatibility and scalability for tools that require specialized prompt manipulation, such as real-time screen translators (MORT), OCR tools, and lyrics translation/study software (ivLyrics), ensuring stable integration within a local ecosystem.
+
+---
+
+### 🚀 Future Roadmap
+
+- **Additional AI Model Support:** Integration with a wider range of open-source and commercial LLM backends
+- **Performance Optimization:** Reducing runtime overhead and implementing streaming responses
+- **Plugin Extension System:** Introducing an architecture that allows users to inject custom processing logic
+- **Expanded API Compatibility:** Continuous updates to align with the latest OpenAI and Gemini specification changes
+- **Enhanced Metrics Visualization:** Adding comprehensive charts and analytics views directly into the GUI dashboard
+- **Localization:** Implementing i18n support for multi-language user interfaces
+
+  
 ## 한국어
 
 ruster는 Gemini WebView, Gemini CLI, ChatGPT WebView를 로컬 번역 엔진으로 묶어 주는 Windows용 번역 프록시입니다. 외부 앱에서는 OpenAI 호환 API, Gemini 호환 API, 또는 단순 Custom API 형식으로 `http://localhost:5000`에 요청하면 됩니다.
@@ -355,3 +404,51 @@ http://127.0.0.1:5000/custom/game-ja-ko
 `Mode` 값은 `translate` 또는 `raw`를 사용할 수 있습니다. `translate`는 ruster의 번역 래핑을 적용하고, `raw`는 `RequestTemplate`으로 만든 프롬프트를 그대로 백엔드에 보냅니다. 프리셋 목록은 `GET /custom/presets`로 확인할 수 있습니다.
 
 현재 로컬 수신 프리셋에서 실제로 영향을 주는 필드는 `Name`, `RequestTemplate`, `ResponseTemplate`, `Mode`, `TimeoutSeconds`입니다. `Url`, `Method`, `Headers`, `ResultPath` 필드는 기존 설정 파일 호환을 위해 읽을 수 있지만, 이 경로에서 외부 API로 재전송하는 용도로 사용하지 않습니다.
+
+### 📂 프로젝트 구조
+
+ruster/
+├── src/
+│   ├── main.rs              # 프로그램 진입점 및 초기화
+│   ├── gui.rs               # GUI 대시보드 및 사용자 인터페이스
+│   ├── http_server.rs       # axum 기반 로컬 API 서버 및 라우팅
+│   ├── custom_api.rs        # 사용자 정의 프리셋(Custom API) 처리
+│   ├── gemini_gate.rs       # Gemini / ChatGPT WebView 브라우저 자동화
+│   ├── cli.rs               # Gemini CLI 모드 및 프로세스 제어
+│   ├── ivlyrics.rs          # ivLyrics 전용 프롬프트 보정 및 가속 패스
+│   ├── logging.rs           # 로그 기록 및 사용 통계 관리
+│   └── diagnostics.rs       # 시스템 상태 진단 및 런타임 검사
+├── assets/                  # 아이콘 및 UI 리소스
+├── Cargo.toml               # Rust 프로젝트 매니페스트 및 의존성 설정
+├── build.rs                 # 빌드 스크립트 (Windows 리소스 컴파일)
+└── README.md                # 프로젝트 문서
+
+---
+
+### 🔄 시스템 동작 흐름
+
+1. **요청 수신:** 외부 프로그램 또는 GUI에서 http://localhost:5000 으로 요청 전송
+2. **라우팅 및 분석:** ruster 내부 HTTP 서버가 요청을 받아 API 형식(OpenAI, Gemini, Custom API)을 분석
+3. **백엔드 전달:** 활성화된 백엔드 엔진(Gemini WebView, Gemini CLI, ChatGPT WebView)으로 프롬프트 전달 및 처리
+4. **포맷 변환:** 백엔드로부터 받은 결과를 요청된 API 규격(호환 형식)에 맞게 변환
+5. **결과 반환:** 최종 번역 데이터를 외부 프로그램 또는 사용자에게 응답
+6. **사후 처리:** 요청 처리 결과를 기반으로 사용 통계 갱신 및 로그 저장
+
+---
+
+### 🎯 개발 목적
+
+ruster는 파편화된 다양한 AI 서비스 백엔드를 하나의 로컬 프록시 환경으로 통합하여, 외부 데스크톱 애플리케이션들이 OpenAI API 또는 Gemini API 형식으로 AI 기능을 쉽게 활용할 수 있도록 돕습니다. 
+
+특히 실시간 화면 번역기(MORT), OCR 프로그램, 가사 번역/학습 도구(ivLyrics) 등 고유의 프롬프트 제어가 필요한 서비스들과의 연동 편의성을 극대화하고, 로컬 환경에서의 호환성과 확장성을 확보하는 데 중점을 두었습니다.
+
+---
+
+### 🚀 향후 개선 사항
+
+- **추가 AI 모델 지원:** 더 다양한 오픈소스 및 커머셜 LLM 백엔드 연동
+- **응답 속도 최적화:** 런타임 오버헤드 단축 및 스트리밍 응답 개선
+- **플러그인 확장 기능 제공:** 사용자 정의 가공 로직을 직접 주입할 수 있는 구조 도입
+- **API 호환성 확대:** 최신 OpenAI/Gemini 규격 변경사항 지속 반영
+- **사용 통계 시각화 강화:** GUI 대시보드 내 대용량 통계 그래프 및 분석 뷰 추가
+- **다국어 UI 지원:** 글로벌 사용자를 위한 i18n 환경 구성
